@@ -11,7 +11,7 @@
     "ios": {
       "bundleIdentifier": "com.angelrxdriguez.openroute",
       "supportsTablet": false,
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/images/icon.png",
       "infoPlist": {
         "CFBundleDevelopmentRegion": "es",
         "ITSAppUsesNonExemptEncryption": false
