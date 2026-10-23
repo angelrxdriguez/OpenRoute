@@ -65,7 +65,7 @@ También puedes descargarla desde GitHub → pestaña **Actions** → la ejecuci
 
 ## 5. Primer uso
 
-- Al empezar la primera actividad, iOS pide la ubicación: elige **Permitir al usarse la app** y, en el segundo aviso, **Cambiar a Permitir siempre**. Sin «Siempre», la grabación se corta al bloquear la pantalla.
+- Al empezar la primera actividad, iOS pide la ubicación: elige **Permitir al usarse la app**. Basta con eso: la app no pide «Siempre» y sigue grabando con la pantalla bloqueada.
 - Deja activada la **Ubicación exacta**.
 - Durante la grabación verás el indicador azul de ubicación en la barra de estado: es normal y significa que el GPS sigue grabando.
 

@@ -17,16 +17,18 @@ import { isMapboxConfigured, Mapbox } from '@/lib/mapbox';
 import { boundsOf } from '@/stats/geo';
 
 /** Mapa de Mapbox (iPhone). En el navegador se usa `route-map.web.tsx`, con MapLibre. */
-export function RouteMap({ points, color, mode, position, style }: RouteMapProps) {
+export function RouteMap({ points, mode, position, trail, style }: RouteMapProps) {
   const theme = useTheme();
   const dark = useColorScheme() === 'dark';
-  const route = useMemo(() => routeShape(points), [points]);
+  const replay = mode === 'replay';
+  const line = useMemo(() => routeShape(replay ? (trail ?? []) : points), [replay, trail, points]);
+  const muted = useMemo(() => routeShape(replay ? points : []), [replay, points]);
   const endpoints = useMemo(
-    () => endpointsShape(mode === 'overview' ? points : [], color, theme.routeCasing),
-    [mode, points, color, theme.routeCasing],
+    () => endpointsShape(mode === 'overview' ? points : [], theme.route, theme.routeCasing),
+    [mode, points, theme.route, theme.routeCasing],
   );
-  const bounds = useMemo(() => (mode === 'overview' ? boundsOf(points) : null), [mode, points]);
-  const marker = useMemo(() => positionShape(mode === 'follow' ? position : null), [mode, position]);
+  const bounds = useMemo(() => (mode === 'follow' ? null : boundsOf(points)), [mode, points]);
+  const marker = useMemo(() => positionShape(position), [position]);
 
   if (!isMapboxConfigured) {
     return (
@@ -62,15 +64,23 @@ export function RouteMap({ points, color, mode, position, style }: RouteMapProps
         )
       )}
 
-      <Mapbox.ShapeSource id="route" shape={route}>
+      <Mapbox.ShapeSource id="route-muted" shape={muted}>
+        <Mapbox.LineLayer
+          id="route-muted-line"
+          style={{ lineColor: theme.routeMuted, lineWidth: 4, lineCap: 'round', lineJoin: 'round' }}
+        />
+      </Mapbox.ShapeSource>
+
+      <Mapbox.ShapeSource id="route" shape={line}>
         <Mapbox.LineLayer
           id="route-casing"
+          aboveLayerID="route-muted-line"
           style={{ lineColor: theme.routeCasing, lineWidth: 8, lineCap: 'round', lineJoin: 'round' }}
         />
         <Mapbox.LineLayer
           id="route-line"
           aboveLayerID="route-casing"
-          style={{ lineColor: color, lineWidth: 5, lineCap: 'round', lineJoin: 'round' }}
+          style={{ lineColor: theme.route, lineWidth: 5, lineCap: 'round', lineJoin: 'round' }}
         />
       </Mapbox.ShapeSource>
 
@@ -94,7 +104,7 @@ export function RouteMap({ points, color, mode, position, style }: RouteMapProps
           style={{
             circleRadius: 8,
             circleColor: theme.tint,
-            circleStrokeColor: theme.routeCasing,
+            circleStrokeColor: theme.markerRing,
             circleStrokeWidth: 3,
           }}
         />

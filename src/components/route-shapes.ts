@@ -5,14 +5,17 @@ import type { LatLng } from '@/stats/geo';
 
 /** Lo que reciben las dos versiones del mapa (`route-map.tsx` en iOS y `route-map.web.tsx`). */
 export type RouteMapProps = {
-  /** Puntos ya filtrados con `cleanTrack`. */
+  /** Puntos ya filtrados con `cleanTrack`. La ruta va siempre en amarillo (`route`). */
   points: TrackPoint[];
-  /** Color de la actividad. */
-  color: string;
-  /** `follow` sigue tu posición mientras grabas; `overview` encuadra la ruta completa. */
-  mode: 'follow' | 'overview';
-  /** En `follow`, tu posición actual: el mapa la marca y la sigue. */
+  /**
+   * `follow` sigue tu posición mientras grabas; `overview` encuadra la ruta completa; `replay`
+   * también la encuadra, pero solo pinta en amarillo lo ya recorrido (`trail`).
+   */
+  mode: 'follow' | 'overview' | 'replay';
+  /** Punto que se marca: tu posición al grabar, el de la repetición o el que señalas en una gráfica. */
   position?: LatLng | null;
+  /** En `replay`, lo recorrido hasta `position`. */
+  trail?: TrackPoint[];
   style?: StyleProp<ViewStyle>;
 };
 
@@ -42,7 +45,7 @@ export function routeShape(points: TrackPoint[]): GeoJSON.FeatureCollection {
   };
 }
 
-/** Salida (hueca, con el borde del color de la actividad) y llegada (rellena). */
+/** Salida (negra con borde amarillo) y llegada (amarilla con borde negro). */
 export function endpointsShape(points: TrackPoint[], color: string, casing: string): GeoJSON.FeatureCollection {
   const first = points[0];
   const last = points[points.length - 1];
@@ -64,3 +67,4 @@ export function positionShape(position: LatLng | null | undefined): GeoJSON.Feat
     ],
   };
 }
+

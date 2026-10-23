@@ -9,11 +9,12 @@ import {
   insertTrackPoints,
   updateActivityStatus,
 } from '@/db/activities';
-import type { ActivityType } from '@/domain/activity-types';
+import { ACTIVITY_TYPE_CONFIG, type ActivityType } from '@/domain/activity-types';
 import type { TrackPoint } from '@/domain/models';
 import { now } from '@/lib/clock';
 import { computeStats } from '@/stats/compute-stats';
 import { defaultActivityName } from '@/stats/format';
+import { applyAutoPause, initialAutoPause } from '@/tracking/auto-pause';
 import { ensurePermissions, startLocationUpdates, stopLocationUpdates } from '@/tracking/location-source';
 import { useRecordingStore, type RecordingSession } from '@/tracking/recording-store';
 
@@ -22,6 +23,8 @@ const store = () => useRecordingStore.getState();
 /** Los lotes de posiciones se guardan de uno en uno para no mezclar escrituras. */
 let pendingWrites: Promise<void> = Promise.resolve();
 let hydration: Promise<void> | null = null;
+/** Estado de la pausa automática de la grabación en curso. */
+let autoPause = initialAutoPause();
 
 function requireSession(): RecordingSession {
   const session = store().session;
@@ -37,10 +40,12 @@ function hydrateSession(): Promise<void> {
     if (!activity) return;
     const points = await getTrackPoints(activity.id);
     if (store().session) return;
+    autoPause = initialAutoPause(points[points.length - 1] ?? null);
     store().setSession({
       activityId: activity.id,
       type: activity.type,
       status: activity.status === 'paused' ? 'paused' : 'recording',
+      autoPaused: false,
       startedAt: activity.startedAt,
       segment: activity.currentSegment,
       points,
@@ -56,10 +61,12 @@ export async function startRecording(type: ActivityType): Promise<void> {
   if (await getUnfinishedActivity()) throw new Error('Ya hay una actividad en curso');
 
   const activity = await createActivity(type, now());
+  autoPause = initialAutoPause();
   store().setSession({
     activityId: activity.id,
     type,
     status: 'recording',
+    autoPaused: false,
     startedAt: activity.startedAt,
     segment: 0,
     points: [],
@@ -86,6 +93,7 @@ export async function resumeRecording(): Promise<void> {
   // Cada reanudación abre un tramo nuevo para no unir con una recta el sitio de la pausa y el actual.
   const segment = session.segment + 1;
   await updateActivityStatus(session.activityId, 'recording', segment);
+  autoPause = initialAutoPause();
   store().setStatus('recording', segment);
   await startLocationUpdates();
 }
@@ -144,15 +152,19 @@ async function persistLocations(locations: LocationObject[]): Promise<void> {
   const session = store().session;
   if (!session || session.status !== 'recording') return;
 
-  const lastTimestamp = session.points[session.points.length - 1]?.timestamp ?? 0;
-  const points = locations
+  const incoming = locations
     .map((location) => toTrackPoint(location, session.segment))
-    .filter((point) => point.timestamp > lastTimestamp)
     .sort((a, b) => a.timestamp - b.timestamp);
-  if (points.length === 0) return;
+  const result = applyAutoPause(autoPause, incoming, ACTIVITY_TYPE_CONFIG[session.type]);
+  autoPause = result.state;
 
-  await insertTrackPoints(session.activityId, points);
-  store().appendPoints(points);
+  const lastTimestamp = session.points[session.points.length - 1]?.timestamp ?? 0;
+  const points = result.accepted.filter((point) => point.timestamp > lastTimestamp);
+  if (points.length > 0) {
+    await insertTrackPoints(session.activityId, points);
+    store().appendPoints(points);
+  }
+  store().setAutoPaused(result.state.paused);
 }
 
 /** Punto de entrada de las posiciones del GPS (la tarea en segundo plano o el simulador). */

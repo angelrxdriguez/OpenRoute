@@ -1,8 +1,7 @@
 import { ACTIVITY_TYPE_CONFIG, type ActivityType } from '@/domain/activity-types';
 import type { ActivityStats, Split, TrackPoint } from '@/domain/models';
-import { cleanTrack } from '@/stats/clean-track';
-import { elevationChange, smoothAltitudes, usableAltitude } from '@/stats/elevation';
-import { haversineDistance } from '@/stats/geo';
+import { elevationChange } from '@/stats/elevation';
+import { buildTimeline } from '@/stats/timeline';
 
 const SPLIT_DISTANCE = 1000;
 
@@ -20,12 +19,9 @@ export type StatsRange = { startedAt: number; endedAt: number | null };
  * así que las paradas (semáforos, avituallamientos) no inflan la distancia ni bajan la media.
  */
 export function computeStats(rawPoints: TrackPoint[], type: ActivityType, range?: StatsRange): ActivityStats {
-  const config = ACTIVITY_TYPE_CONFIG[type];
-  const points = cleanTrack(rawPoints, config);
-  const altitudes = smoothAltitudes(points.map(usableAltitude));
+  const timeline = buildTimeline(rawPoints, ACTIVITY_TYPE_CONFIG[type]);
+  const altitudes = timeline.map((sample) => sample.altitude);
 
-  let distance = 0;
-  let movingTime = 0;
   let maxSpeed = 0;
   const recentSpeeds: number[] = [];
 
@@ -35,32 +31,24 @@ export function computeStats(rawPoints: TrackPoint[], type: ActivityType, range?
   let lastAltitude = altitudes.find((a) => a != null) ?? null;
   let splitStartAltitude = lastAltitude;
 
-  for (let i = 1; i < points.length; i++) {
-    const prev = points[i - 1];
-    const cur = points[i];
-    lastAltitude = altitudes[i] ?? lastAltitude;
+  for (let i = 1; i < timeline.length; i++) {
+    const prev = timeline[i - 1];
+    const cur = timeline[i];
+    lastAltitude = cur.altitude ?? lastAltitude;
 
-    if (cur.segment !== prev.segment) {
+    if (cur.point.segment !== prev.point.segment) {
       recentSpeeds.length = 0;
       continue;
     }
 
-    const seconds = (cur.timestamp - prev.timestamp) / 1000;
-    const meters = haversineDistance(prev, cur);
-    // La velocidad Doppler del GPS es mucho más fiable que la derivada de dos posiciones.
-    const speed = cur.speed != null && cur.speed >= 0 ? cur.speed : meters / seconds;
-
-    recentSpeeds.push(speed);
+    recentSpeeds.push(cur.speed);
     if (recentSpeeds.length > MAX_SPEED_WINDOW) recentSpeeds.shift();
     maxSpeed = Math.max(maxSpeed, median(recentSpeeds));
 
-    if (speed < config.movingThreshold) continue;
+    if (!cur.moving) continue;
 
-    distance += meters;
-    movingTime += seconds;
-
-    let remainingMeters = meters;
-    let remainingSeconds = seconds;
+    let remainingMeters = cur.distance - prev.distance;
+    let remainingSeconds = cur.movingTime - prev.movingTime;
     while (splitDistance + remainingMeters >= SPLIT_DISTANCE) {
       const metersToBoundary = SPLIT_DISTANCE - splitDistance;
       const secondsToBoundary = remainingSeconds * (metersToBoundary / remainingMeters);
@@ -89,13 +77,16 @@ export function computeStats(rawPoints: TrackPoint[], type: ActivityType, range?
     });
   }
 
+  const last = timeline[timeline.length - 1];
+  const distance = last?.distance ?? 0;
+  const movingTime = last?.movingTime ?? 0;
   const { gain, loss } = elevationChange(altitudes);
   const knownAltitudes = altitudes.filter((a): a is number => a != null);
 
   return {
     distance,
     movingTime,
-    elapsedTime: elapsedSeconds(points, range),
+    elapsedTime: elapsedSeconds(timeline.map((sample) => sample.point), range),
     avgSpeed: movingTime > 0 ? distance / movingTime : 0,
     maxSpeed,
     elevationGain: gain,

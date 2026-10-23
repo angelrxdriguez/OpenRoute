@@ -26,7 +26,7 @@ const MAP_STYLE = {
   dark: 'https://tiles.openfreemap.org/styles/dark',
 } as const;
 
-export function RouteMap({ points, color, mode, position, style }: RouteMapProps) {
+export function RouteMap({ points, mode, position, trail, style }: RouteMapProps) {
   const theme = useTheme();
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const containerRef = useRef<HTMLDivElement>(null);
@@ -36,13 +36,15 @@ export function RouteMap({ points, color, mode, position, style }: RouteMapProps
   // tema claro/oscuro o al recargar en caliente) antes de que haya terminado de cargar.
   const [loadedMap, setLoadedMap] = useState<maplibregl.Map | null>(null);
 
-  const route = useMemo(() => routeShape(points), [points]);
+  const replay = mode === 'replay';
+  const line = useMemo(() => routeShape(replay ? (trail ?? []) : points), [replay, trail, points]);
+  const muted = useMemo(() => routeShape(replay ? points : []), [replay, points]);
   const endpoints = useMemo(
-    () => endpointsShape(mode === 'overview' ? points : [], color, theme.routeCasing),
-    [mode, points, color, theme.routeCasing],
+    () => endpointsShape(mode === 'overview' ? points : [], theme.route, theme.routeCasing),
+    [mode, points, theme.route, theme.routeCasing],
   );
-  const bounds = useMemo(() => (mode === 'overview' ? boundsOf(points) : null), [mode, points]);
-  const marker = useMemo(() => positionShape(mode === 'follow' ? position : null), [mode, position]);
+  const bounds = useMemo(() => (mode === 'follow' ? null : boundsOf(points)), [mode, points]);
+  const marker = useMemo(() => positionShape(position), [position]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -62,9 +64,17 @@ export function RouteMap({ points, color, mode, position, style }: RouteMapProps
 
     map.on('load', () => {
       const empty: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
+      map.addSource('route-muted', { type: 'geojson', data: empty });
       map.addSource('route', { type: 'geojson', data: empty });
       map.addSource('endpoints', { type: 'geojson', data: empty });
       map.addSource('position', { type: 'geojson', data: empty });
+      map.addLayer({
+        id: 'route-muted-line',
+        type: 'line',
+        source: 'route-muted',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-width': 4 },
+      });
       map.addLayer({
         id: 'route-casing',
         type: 'line',
@@ -111,26 +121,41 @@ export function RouteMap({ points, color, mode, position, style }: RouteMapProps
   useEffect(() => {
     const map = loadedMap;
     if (!map || map !== mapRef.current) return;
+    map.setPaintProperty('route-muted-line', 'line-color', theme.routeMuted);
     map.setPaintProperty('route-casing', 'line-color', theme.routeCasing);
-    map.setPaintProperty('route-line', 'line-color', color);
+    map.setPaintProperty('route-line', 'line-color', theme.route);
     map.setPaintProperty('position-circle', 'circle-color', theme.tint);
-    map.setPaintProperty('position-circle', 'circle-stroke-color', theme.routeCasing);
-  }, [loadedMap, color, theme.routeCasing, theme.tint]);
+    map.setPaintProperty('position-circle', 'circle-stroke-color', theme.markerRing);
+  }, [loadedMap, theme.routeMuted, theme.routeCasing, theme.route, theme.tint, theme.markerRing]);
+
+  // Una fuente por efecto: en la repetición solo cambian lo recorrido y el punto, y así no se
+  // vuelve a mandar la ruta entera en cada fotograma.
+  useEffect(() => {
+    if (loadedMap && loadedMap === mapRef.current) loadedMap.getSource<GeoJSONSource>('route')?.setData(line);
+  }, [loadedMap, line]);
+
+  useEffect(() => {
+    if (loadedMap && loadedMap === mapRef.current) loadedMap.getSource<GeoJSONSource>('route-muted')?.setData(muted);
+  }, [loadedMap, muted]);
+
+  useEffect(() => {
+    if (loadedMap && loadedMap === mapRef.current) loadedMap.getSource<GeoJSONSource>('endpoints')?.setData(endpoints);
+  }, [loadedMap, endpoints]);
+
+  useEffect(() => {
+    if (loadedMap && loadedMap === mapRef.current) loadedMap.getSource<GeoJSONSource>('position')?.setData(marker);
+  }, [loadedMap, marker]);
+
+  useEffect(() => {
+    const map = loadedMap;
+    if (!map || map !== mapRef.current || !bounds) return;
+    map.fitBounds([bounds.sw, bounds.ne], { padding: 40, duration: 0 });
+  }, [loadedMap, bounds]);
 
   useEffect(() => {
     const map = loadedMap;
     if (!map || map !== mapRef.current) return;
-    map.getSource<GeoJSONSource>('route')?.setData(route);
-    map.getSource<GeoJSONSource>('endpoints')?.setData(endpoints);
-    map.getSource<GeoJSONSource>('position')?.setData(marker);
-  }, [loadedMap, route, endpoints, marker]);
-
-  useEffect(() => {
-    const map = loadedMap;
-    if (!map || map !== mapRef.current) return;
-    if (mode === 'overview' && bounds) {
-      map.fitBounds([bounds.sw, bounds.ne], { padding: 40, duration: 0 });
-    } else if (mode === 'follow' && position) {
+    if (mode === 'follow' && position) {
       const center: [number, number] = [position.longitude, position.latitude];
       if (hasCenteredRef.current) {
         // Solo se mueve: respeta el zoom que hayas puesto.

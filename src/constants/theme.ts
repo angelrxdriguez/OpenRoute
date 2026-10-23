@@ -23,8 +23,13 @@ export const Colors = {
     onDanger: '#FFFFFF',
     /** Estado «en pausa». Solo como indicador junto a su texto (2:1 sobre blanco). */
     warning: '#F5A623',
-    /** Borde de la ruta y de los marcadores del mapa, para que destaquen sobre cualquier fondo. */
-    routeCasing: '#FFFFFF',
+    /** Ruta en el mapa: siempre amarilla con borde casi negro, para que el amarillo quede sobre negro. */
+    route: '#D4F53C',
+    routeCasing: '#0A0A0A',
+    /** Lo que queda por recorrer en la repetición. */
+    routeMuted: 'rgba(10, 10, 10, 0.35)',
+    /** Borde del punto de tu posición en el mapa. */
+    markerRing: '#FFFFFF',
     /** Velo detrás de las hojas de confirmación. */
     overlay: 'rgba(0, 0, 0, 0.45)',
   },
@@ -42,7 +47,10 @@ export const Colors = {
     danger: '#D93025',
     onDanger: '#FFFFFF',
     warning: '#F5A623',
+    route: '#D4F53C',
     routeCasing: '#0E1012',
+    routeMuted: 'rgba(255, 255, 255, 0.35)',
+    markerRing: '#0E1012',
     overlay: 'rgba(0, 0, 0, 0.6)',
   },
 } as const;
@@ -50,7 +58,7 @@ export const Colors = {
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 /**
- * Color de cada actividad en listas, mapa y gráficas. Comprobados para que se distingan
+ * Color de cada actividad en listas y gráficas (en el mapa, la ruta va siempre en `route`). Comprobados para que se distingan
  * entre sí también con daltonismo rojo-verde y se lean sobre la app y sobre el mapa.
  * Siempre van acompañados del icono y el nombre de la actividad, nunca solo el color.
  */

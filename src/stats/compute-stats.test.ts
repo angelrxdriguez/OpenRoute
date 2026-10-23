@@ -89,6 +89,18 @@ describe('computeStats', () => {
     expect(stats.elapsedTime).toBe(1200);
   });
 
+  it('no cuenta como movimiento un hueco sin lecturas aunque la siguiente vaya rápida', () => {
+    // Como tras una pausa automática: el punto que llega marca velocidad, pero apenas te has movido.
+    const track = buildTrack([
+      { seconds: 100, speed: 3 },
+      { seconds: 100, speed: 3, gapBefore: 120 },
+    ]);
+    const stats = computeStats(track, 'run');
+
+    expect(stats.movingTime).toBe(199);
+    expect(stats.distance).toBeCloseTo(597, 0);
+  });
+
   it('descarta un salto aislado del GPS', () => {
     const track = buildTrack([{ seconds: 200, speed: 3 }]);
     track[100] = { ...track[100], latitude: track[100].latitude + 0.005 };
