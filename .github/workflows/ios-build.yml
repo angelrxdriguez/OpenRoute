@@ -1,0 +1,89 @@
+# Compila la app para iPhone SIN firmar, en un Mac de GitHub, y deja el .ipa como artefacto.
+# Después se instala desde Windows con Sideloadly usando un Apple ID gratuito
+# (ver docs/instalacion-iphone.md).
+#
+# Se lanza a mano desde GitHub > Actions > "iOS build" > Run workflow, o con:
+#   gh workflow run ios-build.yml -f profile=development
+#
+# Ojo: en un repo privado los minutos de macOS cuentan x10. Solo hace falta recompilar
+# cuando cambian dependencias nativas o app.json; el resto se recarga desde el PC.
+
+name: iOS build
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: 'development = se conecta al PC para recargar el código; release = autónoma, para el día a día'
+        type: choice
+        options: [development, release]
+        default: development
+
+concurrency:
+  group: ios-build-${{ inputs.profile }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 75
+    env:
+      # Token público de Mapbox (pk.…). Se guarda en Settings > Secrets and variables > Actions.
+      EXPO_PUBLIC_MAPBOX_TOKEN: ${{ secrets.MAPBOX_PUBLIC_TOKEN }}
+      CONFIGURATION: ${{ inputs.profile == 'release' && 'Release' || 'Debug' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Generar el proyecto nativo de iOS
+        run: npx expo prebuild --platform ios --clean
+
+      - name: Compilar sin firmar
+        run: |
+          WORKSPACE=$(ls -d ios/*.xcworkspace | head -1)
+          SCHEME=$(basename "$WORKSPACE" .xcworkspace)
+          echo "SCHEME=$SCHEME" >> "$GITHUB_ENV"
+          set -o pipefail
+          xcodebuild \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -configuration "$CONFIGURATION" \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build | tee xcodebuild.log | grep -E '^(\*\*|error:|.*: error:)' || true
+          test -d "build/Build/Products/${CONFIGURATION}-iphoneos/${SCHEME}.app"
+
+      - name: Empaquetar el .ipa
+        run: |
+          mkdir Payload
+          cp -R "build/Build/Products/${CONFIGURATION}-iphoneos/${SCHEME}.app" Payload/
+          zip -qry "OpenRoute-${{ inputs.profile }}.ipa" Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenRoute-${{ inputs.profile }}-${{ github.run_number }}
+          path: OpenRoute-${{ inputs.profile }}.ipa
+          retention-days: 14
+
+      - name: Guardar el log de Xcode si falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-log-${{ github.run_number }}
+          path: xcodebuild.log
+          retention-days: 7

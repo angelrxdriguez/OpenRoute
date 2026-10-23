@@ -1,0 +1,660 @@
+<title>Paletas OpenRoute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,500,1,0&icon_names=chevron_right,directions_bike,directions_run,directions_walk,expand_more,landscape,play_arrow,stop&display=block">
+<style>
+  :root {
+    --bg: #F1F2F3;
+    --surface: #FFFFFF;
+    --ink: #15171A;
+    --muted: #5A6067;
+    --line: #DADDE1;
+    --chip: #E7E9EC;
+    --selected: #15171A;
+    --font-display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+    --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    --font-app: -apple-system, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0D0F11;
+      --surface: #16191C;
+      --ink: #ECEEF0;
+      --muted: #9BA2A9;
+      --line: #2A2F34;
+      --chip: #22262A;
+      --selected: #ECEEF0;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0D0F11;
+    --surface: #16191C;
+    --ink: #ECEEF0;
+    --muted: #9BA2A9;
+    --line: #2A2F34;
+    --chip: #22262A;
+    --selected: #ECEEF0;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    padding-inline: 16px;
+    padding-block: 32px 120px;
+  }
+  .wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 28px; }
+  .wrap-sections { display: grid; gap: 48px; }
+
+  .ms {
+    font-family: 'Material Symbols Rounded';
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+  }
+
+  /* Cabecera */
+  .top { display: grid; gap: 14px; max-width: 760px; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(40px, 7vw, 64px);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .lede { margin: 0; color: var(--muted); max-width: 62ch; font-size: 17px; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+  .segmented {
+    display: inline-flex;
+    padding: 3px;
+    border-radius: 999px;
+    background: var(--chip);
+  }
+  .segmented button {
+    font: 600 14px var(--font-body);
+    color: var(--muted);
+    background: transparent;
+    border: 0;
+    border-radius: 999px;
+    padding: 7px 16px;
+    cursor: pointer;
+  }
+  .segmented button[aria-checked="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / 0.12); }
+  .note { margin: 0; font-size: 13px; color: var(--muted); max-width: 60ch; }
+
+  /* Rejilla de propuestas */
+  .grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 590px), 1fr));
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 20px;
+    display: grid;
+    gap: 18px;
+    align-content: start;
+    scroll-margin-top: 16px;
+  }
+  .card[data-selected="true"] { outline: 2.5px solid var(--selected); outline-offset: 2px; }
+  .card-head { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: start; }
+  .num {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--muted);
+    padding-top: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .section { display: grid; gap: 16px; }
+  .section-head { display: grid; gap: 6px; max-width: 760px; }
+  .section-head h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 34px;
+    line-height: 1;
+  }
+  .section-head p { margin: 0; color: var(--muted); max-width: 66ch; }
+  .card h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+  }
+  .concept { margin: 4px 0 0; color: var(--muted); font-size: 14px; max-width: 46ch; }
+  .pick {
+    font: 600 14px var(--font-body);
+    border: 1.5px solid var(--line);
+    background: transparent;
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 7px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .pick:hover { border-color: var(--muted); }
+  .pick[aria-pressed="true"] { background: var(--selected); color: var(--surface); border-color: var(--selected); }
+  button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  .phones { display: flex; justify-content: center; gap: 14px; }
+  .phone-wrap { display: grid; gap: 8px; justify-items: center; margin: 0; }
+  .phone-wrap figcaption { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+
+  .specs { display: grid; gap: 10px; }
+  .spec-row { display: grid; grid-template-columns: 84px 1fr; gap: 10px; align-items: center; }
+  .spec-label { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 6px; }
+  .sw { display: grid; gap: 3px; justify-items: start; }
+  .sw-color { width: 44px; height: 26px; border-radius: 6px; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12); }
+  .sw-hex { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+  .sw-name { font-size: 10px; color: var(--muted); line-height: 1; }
+  .acts { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+  .act { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+  .act-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: #fff;
+  }
+  .act-dot .ms { font-size: 14px; }
+  .checks { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .checks li {
+    font-size: 12px;
+    background: var(--chip);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .checks b { font-weight: 600; }
+
+  /* Maqueta de iPhone */
+  .phone {
+    width: 252px;
+    height: 528px;
+    border-radius: 38px;
+    padding: 7px;
+    background: #0B0C0E;
+    box-shadow: 0 0 0 1px #2B2E33, 0 10px 28px rgb(0 0 0 / 0.16);
+  }
+  .screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 31px;
+    overflow: hidden;
+    background: var(--s-bg);
+    color: var(--s-text);
+    font-family: var(--font-app);
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  .sb {
+    height: 34px;
+    padding: 12px 22px 0 26px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 11px;
+  }
+  .sb-r { display: inline-flex; gap: 4px; align-items: center; }
+  .sb-r i { display: block; width: 14px; height: 7px; border-radius: 2px; border: 1.2px solid currentColor; position: relative; }
+  .sb-r i::after { content: ''; position: absolute; inset: 1px 4px 1px 1px; background: currentColor; border-radius: 1px; }
+  .sb-r s { display: block; width: 12px; height: 7px; background: linear-gradient(90deg, currentColor 0 2px, transparent 2px 3px, currentColor 3px 5px, transparent 5px 6px, currentColor 6px 8px, transparent 8px 9px, currentColor 9px 11px, transparent 11px); clip-path: polygon(0 100%, 100% 0, 100% 100%); }
+  .island { position: absolute; top: 9px; left: 50%; width: 70px; height: 20px; margin-left: -35px; border-radius: 12px; background: #000; }
+
+  .s-title { padding: 6px 16px 8px; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+  .s-body { padding: 0 12px; display: grid; gap: 8px; }
+  .week { background: var(--s-surface); border-radius: 12px; padding: 10px 11px; display: grid; gap: 6px; }
+  .week-head { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 11px; }
+  .badge { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--s-accent); color: var(--s-on-accent); }
+  .stats3 { display: flex; justify-content: space-between; }
+  .st small { display: block; font-size: 9px; color: var(--s-muted); }
+  .st b { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .st b i { font-style: normal; font-weight: 500; font-size: 9px; color: var(--s-muted); }
+  .feature { border-radius: 12px; overflow: hidden; background: var(--s-surface); }
+  .feature svg { display: block; width: 100%; height: 92px; }
+  .row { display: grid; grid-template-columns: 30px 1fr auto; gap: 9px; align-items: center; padding: 8px 10px; }
+  .row + .row { border-top: 1px solid var(--s-border); }
+  .rows { display: grid; }
+  .ico {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: grid; place-items: center;
+  }
+  .ico .ms { font-size: 18px; }
+  .row-t { font-weight: 600; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-d { font-size: 9.5px; color: var(--s-muted); }
+  .row-m { font-size: 10px; font-variant-numeric: tabular-nums; }
+  .chev { color: var(--s-muted); font-size: 16px; }
+  .cta {
+    position: absolute; left: 12px; right: 12px; bottom: 22px;
+    height: 40px; border-radius: 14px;
+    background: var(--s-primary); color: var(--s-on-primary);
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+    font-weight: 700; font-size: 12px;
+  }
+  .cta .ms { font-size: 18px; }
+  .home { position: absolute; bottom: 7px; left: 50%; width: 90px; height: 4px; margin-left: -45px; border-radius: 2px; background: var(--s-text); opacity: 0.85; }
+
+  /* Pantalla de grabación */
+  .rec-map { position: absolute; inset: 0 0 auto 0; height: 262px; }
+  .rec-map svg { display: block; width: 100%; height: 100%; }
+  .rec-top { position: absolute; top: 40px; left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .round { width: 28px; height: 28px; border-radius: 50%; background: var(--s-bg); display: grid; place-items: center; box-shadow: 0 1px 3px rgb(0 0 0 / 0.2); }
+  .round .ms { font-size: 18px; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 999px; background: var(--s-surface); font-weight: 600; font-size: 10px; box-shadow: 0 1px 3px rgb(0 0 0 / 0.18); }
+  .pill i { width: 7px; height: 7px; border-radius: 50%; background: #F5A623; }
+  .panel {
+    position: absolute; left: 0; right: 0; bottom: 0; top: 244px;
+    background: var(--s-bg);
+    border-radius: 20px 20px 0 0;
+    padding: 14px 14px 0;
+    display: grid; gap: 9px; align-content: start;
+  }
+  .big { text-align: center; }
+  .big small { display: block; font-size: 9.5px; color: var(--s-muted); }
+  .big b { display: block; font-size: 34px; line-height: 1.05; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .big span { font-size: 9.5px; color: var(--s-muted); }
+  .grid4 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 10px; }
+  .grid4 .st { text-align: center; }
+  .prof { display: block; width: 100%; height: 34px; }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .btn { height: 38px; border-radius: 13px; display: flex; align-items: center; justify-content: center; gap: 3px; font-weight: 700; font-size: 11.5px; }
+  .btn .ms { font-size: 17px; }
+  .btn.primary { background: var(--s-primary); color: var(--s-on-primary); }
+  .btn.danger { background: var(--s-danger); color: #fff; }
+
+  /* Barra de elección */
+  .choice {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -6px 20px rgb(0 0 0 / 0.08);
+  }
+  .choice-in { max-width: 1240px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  .choice-swatch { display: flex; gap: 3px; }
+  .choice-swatch span { width: 18px; height: 18px; border-radius: 5px; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12); }
+  .choice-text { flex: 1 1 220px; font-size: 14px; }
+  .choice-text strong { font-family: var(--font-display); font-size: 20px; letter-spacing: 0.01em; }
+  .copy {
+    font: 600 14px var(--font-body);
+    background: var(--ink); color: var(--surface);
+    border: 0; border-radius: 999px; padding: 9px 16px; cursor: pointer;
+  }
+  .copy-out { width: 100%; font-family: var(--font-mono); font-size: 11px; min-height: 120px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); padding: 8px; }
+
+  @media (max-width: 640px) {
+    .card { padding: 16px; }
+    .phone { zoom: 0.62; }
+    .spec-row { grid-template-columns: 1fr; gap: 6px; }
+  }
+  @media (max-width: 380px) {
+    .phone { zoom: 0.56; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .card { transition: outline-color 0.15s; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">OpenRoute · Identidad visual</div>
+    <h1>Paletas OpenRoute</h1>
+    <p class="lede">Diez propuestas de color para la app. Cada una aparece en una maqueta de iPhone en modo claro y oscuro, con los colores de las cuatro actividades y el recorrido sobre el mapa.</p>
+    <div class="controls">
+      <div class="segmented" role="radiogroup" aria-label="Pantalla de la maqueta">
+        <button type="button" id="screen-list" role="radio" aria-checked="true" data-screen="list">Historial</button>
+        <button type="button" id="screen-record" role="radio" aria-checked="false" data-screen="record">Grabando</button>
+      </div>
+      <p class="note">Todos los colores están comprobados: el texto de los botones tiene contraste 4,5:1 o más, y los de actividad se leen sobre la app y sobre el mapa (3:1) y se distinguen entre sí también con daltonismo rojo-verde (ΔE 8 o más en todas las parejas).</p>
+    </div>
+  </header>
+
+  <main class="wrap-sections">
+    <section class="section" aria-labelledby="variants-title">
+      <div class="section-head">
+        <h2 id="variants-title">Volt con otros acentos</h2>
+        <p>La misma estructura que Volt (07): blanco y negro con un solo color fuerte. En claro, los botones son negros con el texto en el color de acento; en oscuro, el botón entero es de ese color. Mira sobre todo la pantalla «Grabando» en oscuro, donde el acento está junto al rojo de «Terminar».</p>
+      </div>
+      <div id="variants" class="grid"></div>
+    </section>
+    <section class="section" aria-labelledby="all-title">
+      <div class="section-head">
+        <h2 id="all-title">Las 10 propuestas</h2>
+      </div>
+      <div id="grid" class="grid"></div>
+    </section>
+  </main>
+</div>
+
+<div class="choice" id="choice" hidden>
+  <div class="choice-in">
+    <div class="choice-swatch" id="choice-swatch"></div>
+    <div class="choice-text" id="choice-text"></div>
+    <button type="button" class="copy" id="copy">Copiar tokens</button>
+    <textarea class="copy-out" id="copy-out" readonly hidden aria-label="Tokens de la paleta elegida"></textarea>
+  </div>
+</div>
+
+<script>
+  const PALETTES = [{"id":"asfalto","name":"Asfalto","light":{"primary":"#C8410B","onPrimary":"#FFFFFF","accent":"#1D2B3A","bg":"#FFFFFF","surface":"#F3F3F2","border":"#E3E3E0","text":"#17181A","muted":"#5F6166"},"dark":{"primary":"#FF6B2C","onPrimary":"#1A0B04","accent":"#9FB4CC","bg":"#0E0F10","surface":"#1B1C1E","border":"#2C2D30","text":"#F4F4F5","muted":"#A1A3A8"},"activity":{"light":["#EF3C0D","#2D8D44","#1B66F1","#8F53B8"],"dark":["#B15413","#34A751","#3168B9","#A074E0"]},"cvd":{"light":9.1,"dark":9}},{"id":"bosque","name":"Bosque","light":{"primary":"#1E6B47","onPrimary":"#FFFFFF","accent":"#E9A23B","bg":"#FBFCFA","surface":"#EEF2EE","border":"#DCE3DC","text":"#142019","muted":"#56645B"},"dark":{"primary":"#45C486","onPrimary":"#06180F","accent":"#F0B456","bg":"#0C120F","surface":"#16201B","border":"#24322A","text":"#EAF2EC","muted":"#98A89E"},"activity":{"light":["#D56425","#289B6F","#2C74C9","#A7428D"],"dark":["#E36302","#249F61","#398CE9","#BD67AD"]},"cvd":{"light":10,"dark":9.8}},{"id":"glaciar","name":"Glaciar","light":{"primary":"#1F5FD1","onPrimary":"#FFFFFF","accent":"#F2A900","bg":"#FFFFFF","surface":"#F0F3F7","border":"#DDE3EA","text":"#0F1A2A","muted":"#5A6678"},"dark":{"primary":"#5E9BFF","onPrimary":"#061226","accent":"#FFC23D","bg":"#0A0F17","surface":"#141B26","border":"#232D3B","text":"#EAF0F7","muted":"#94A0B2"},"activity":{"light":["#275AF7","#2D9B6D","#E0621E","#9955B8"],"dark":["#4F88EA","#09A671","#DA6928","#B066B4"]},"cvd":{"light":10,"dark":9.2}},{"id":"atardecer","name":"Atardecer","light":{"primary":"#C92A62","onPrimary":"#FFFFFF","accent":"#F28C28","bg":"#FFFCFB","surface":"#F8EFEE","border":"#EEDFDD","text":"#24161A","muted":"#6E5A5F"},"dark":{"primary":"#FF6E9C","onPrimary":"#2A0614","accent":"#FFA24D","bg":"#140C10","surface":"#21161B","border":"#33242B","text":"#F6ECEF","muted":"#B39DA5"},"activity":{"light":["#C92A62","#1A6B2F","#D66D07","#5465D6"],"dark":["#E04E7F","#2C7A3D","#C47F00","#6F7FEA"]},"cvd":{"light":10,"dark":8.6}},{"id":"nocturno","name":"Nocturno","light":{"primary":"#0B7A73","onPrimary":"#FFFFFF","accent":"#D97706","bg":"#F7F9FA","surface":"#EAEFF1","border":"#D6DEE2","text":"#0D1417","muted":"#536168"},"dark":{"primary":"#2EE6D6","onPrimary":"#03211F","accent":"#FFB547","bg":"#05080A","surface":"#10161A","border":"#1D262C","text":"#E6F1F3","muted":"#8FA1A8"},"activity":{"light":["#0589B9","#9F6401","#D9466F","#7959E3"],"dark":["#1A9EC8","#C47E01","#E85A82","#916FFB"]},"cvd":{"light":9.5,"dark":10.1}},{"id":"tierra","name":"Tierra","light":{"primary":"#B5481F","onPrimary":"#FFFFFF","accent":"#5E7D1E","bg":"#FAF7F2","surface":"#F0EAE0","border":"#E2D8C9","text":"#2A1F17","muted":"#6F6255"},"dark":{"primary":"#E8784A","onPrimary":"#1E0C04","accent":"#A3C25A","bg":"#15110D","surface":"#221B15","border":"#352B22","text":"#F3ECE3","muted":"#B0A291"},"activity":{"light":["#9C3913","#4F8A3A","#0C79D1","#8A559E"],"dark":["#E6650E","#47A46E","#1599DA","#A95F98"]},"cvd":{"light":8.7,"dark":10}},{"id":"volt","name":"Volt","light":{"primary":"#111111","onPrimary":"#FFFFFF","accent":"#D4F53C","bg":"#FFFFFF","surface":"#F2F2F2","border":"#E2E2E2","text":"#0A0A0A","muted":"#616161"},"dark":{"primary":"#D4F53C","onPrimary":"#0A0A0A","accent":"#D4F53C","bg":"#000000","surface":"#141414","border":"#262626","text":"#FFFFFF","muted":"#A3A3A3"},"activity":{"light":["#FD2E22","#2D924C","#3965AA","#9B55E8"],"dark":["#FB4B11","#35A766","#2178B2","#A671EC"]},"cvd":{"light":10.1,"dark":9.3}},{"id":"oceano","name":"Océano","light":{"primary":"#0F766E","onPrimary":"#FFFFFF","accent":"#F0604B","bg":"#FFFFFF","surface":"#EFF5F4","border":"#D9E5E3","text":"#0E1C1B","muted":"#50625F"},"dark":{"primary":"#3ED3BE","onPrimary":"#04201C","accent":"#FF7A66","bg":"#071110","surface":"#0F1D1C","border":"#1B2D2B","text":"#E5F2F0","muted":"#8EA7A3"},"activity":{"light":["#FA2C0B","#2E8F47","#2371FB","#9258BE"],"dark":["#C43B14","#45A65F","#0F87EE","#B65CB3"]},"cvd":{"light":10,"dark":10.1}},{"id":"balizas","name":"Balizas","light":{"primary":"#C8211F","onPrimary":"#FFFFFF","accent":"#F2C200","bg":"#FFFFFF","surface":"#F4F2EE","border":"#E3DFD7","text":"#1C1A17","muted":"#66615A"},"dark":{"primary":"#F2453F","onPrimary":"#1A0504","accent":"#FFD23A","bg":"#111110","surface":"#1C1B19","border":"#2D2B28","text":"#F2F0EC","muted":"#A6A199"},"activity":{"light":["#C93A63","#496A0E","#1F6DB0","#B07D00"],"dark":["#C33531","#1FA787","#4D7FE0","#BA832C"]},"cvd":{"light":10.2,"dark":10.2}},{"id":"violeta","name":"Violeta","light":{"primary":"#6532D9","onPrimary":"#FFFFFF","accent":"#0FA3C2","bg":"#FFFFFF","surface":"#F3F1FA","border":"#E2DDF1","text":"#16122A","muted":"#5E5875"},"dark":{"primary":"#A386FF","onPrimary":"#140A33","accent":"#3CCFEA","bg":"#0C0A14","surface":"#17142A","border":"#262140","text":"#EEEBFA","muted":"#A39DBF"},"activity":{"light":["#6532D9","#10682E","#D56A12","#288EC3"],"dark":["#8E6CF5","#359D58","#FB4A19","#169CC6"]},"cvd":{"light":10.3,"dark":9.9}}];
+  const VARIANTS = [{"id":"volt-baliza","name":"Volt baliza","light":{"primary":"#111111","onPrimary":"#FFD000","accent":"#FFD000","bg":"#FFFFFF","surface":"#F2F2F2","border":"#E2E2E2","text":"#0A0A0A","muted":"#616161"},"dark":{"primary":"#FFD000","onPrimary":"#0A0A0A","accent":"#FFD000","bg":"#000000","surface":"#141414","border":"#262626","text":"#FFFFFF","muted":"#A3A3A3"},"activity":{"light":["#FD2E22","#2D924C","#3965AA","#9B55E8"],"dark":["#FB4B11","#35A766","#2178B2","#A671EC"]},"cvd":{"light":10.1,"dark":9.3}},{"id":"volt-rosa","name":"Volt rosa flúor","light":{"primary":"#111111","onPrimary":"#FF2E88","accent":"#FF2E88","bg":"#FFFFFF","surface":"#F2F2F2","border":"#E2E2E2","text":"#0A0A0A","muted":"#616161"},"dark":{"primary":"#FF2E88","onPrimary":"#0A0A0A","accent":"#FF2E88","bg":"#000000","surface":"#141414","border":"#262626","text":"#FFFFFF","muted":"#A3A3A3"},"activity":{"light":["#FD2E22","#2D924C","#3965AA","#9B55E8"],"dark":["#FB4B11","#35A766","#2178B2","#A671EC"]},"cvd":{"light":10.1,"dark":9.3}},{"id":"volt-cian","name":"Volt cian","light":{"primary":"#111111","onPrimary":"#00D9FF","accent":"#00D9FF","bg":"#FFFFFF","surface":"#F2F2F2","border":"#E2E2E2","text":"#0A0A0A","muted":"#616161"},"dark":{"primary":"#00D9FF","onPrimary":"#0A0A0A","accent":"#00D9FF","bg":"#000000","surface":"#141414","border":"#262626","text":"#FFFFFF","muted":"#A3A3A3"},"activity":{"light":["#FD2E22","#2D924C","#3965AA","#9B55E8"],"dark":["#FB4B11","#35A766","#2178B2","#A671EC"]},"cvd":{"light":10.1,"dark":9.3}},{"id":"volt-naranja","name":"Volt naranja reflectante","light":{"primary":"#111111","onPrimary":"#FF5A1F","accent":"#FF5A1F","bg":"#FFFFFF","surface":"#F2F2F2","border":"#E2E2E2","text":"#0A0A0A","muted":"#616161"},"dark":{"primary":"#FF5A1F","onPrimary":"#0A0A0A","accent":"#FF5A1F","bg":"#000000","surface":"#141414","border":"#262626","text":"#FFFFFF","muted":"#A3A3A3"},"activity":{"light":["#FD2E22","#2D924C","#3965AA","#9B55E8"],"dark":["#FB4B11","#35A766","#2178B2","#A671EC"]},"cvd":{"light":10.1,"dark":9.3}}];
+  const ALL = [...VARIANTS, ...PALETTES];
+
+  const CONCEPTS = {
+    asfalto: 'Naranja de dorsal sobre grafito. Pensada para carretera: el naranja destaca sobre cualquier mapa.',
+    bosque: 'Verde de pinar con ámbar de hojarasca. La más natural, muy de BTT y sendero.',
+    glaciar: 'Azul de hielo, blanco nieve y el amarillo del amanecer en la cumbre. Limpia y técnica.',
+    atardecer: 'Frambuesa y naranja de última luz. Cálida, con carácter y nada típica en apps de deporte.',
+    nocturno: 'Cian de frontal sobre negro. Hecha para el modo oscuro y las salidas de madrugada.',
+    tierra: 'Óxido, oliva y arena de pista forestal. Sobria y orgánica.',
+    volt: 'Blanco y negro con amarillo flúor. Minimalista, como un dorsal de competición.',
+    oceano: 'Verde azulado profundo con coral. Fresca y tranquila.',
+    balizas: 'Rojo GR, amarillo PR y verde SL: los colores de las marcas de sendero en España.',
+    violeta: 'Violeta eléctrico con cian. Tecnológica y fuera de lo habitual en el deporte.',
+    'volt-baliza': 'El amarillo de las marcas PR de los senderos. Llamativo, sin el tono verdoso del Volt de Nike.',
+    'volt-rosa': 'Rosa flúor. Muy poco visto en apps de deporte y se ve mucho sobre el mapa. Ojo: se acerca al rojo de «Terminar».',
+    'volt-cian': 'Cian eléctrico, como la luz de un frontal o de un ciclocomputador. El más frío y técnico.',
+    'volt-naranja': 'Naranja de chaleco reflectante. Muy de seguridad vial, pero recuerda a Strava y se confunde con el rojo de «Terminar».',
+  };
+
+  const ACTIVITIES = [
+    { key: 'road_bike', label: 'Carretera', icon: 'directions_bike' },
+    { key: 'mtb', label: 'BTT', icon: 'landscape' },
+    { key: 'run', label: 'Correr', icon: 'directions_run' },
+    { key: 'walk', label: 'Caminar', icon: 'directions_walk' },
+  ];
+
+  const MAP = {
+    light: { base: '#EEF0E8', park: '#D6E5C6', water: '#B9D6EE', road: '#FFFFFF', roadEdge: '#D8DBD2', contour: '#CFC5AE', casing: '#FFFFFF' },
+    dark: { base: '#1B1F22', park: '#1E2A22', water: '#16283A', road: '#2F353B', roadEdge: '#24292E', contour: '#2E322E', casing: '#0E1012' },
+  };
+  const DANGER = { light: '#D93025', dark: '#E5483D' };
+
+  // Contraste WCAG 2.x
+  const lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const lum = (hex) => {
+    const [r, g, b] = [1, 3, 5].map((i) => lin(parseInt(hex.slice(i, i + 2), 16) / 255));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const contrast = (a, b) => {
+    const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+    return (hi + 0.05) / (lo + 0.05);
+  };
+  const readableOn = (hex) => (contrast('#FFFFFF', hex) >= contrast('#111111', hex) ? '#FFFFFF' : '#111111');
+  const num = (n, d = 1) => n.toFixed(d).replace('.', ',');
+  const tint = (hex, alpha) => hex + Math.round(alpha * 255).toString(16).padStart(2, '0');
+
+  function smoothPath(points, w, h) {
+    const p = points.map(([x, y]) => [x * w, y * h]);
+    let d = `M${p[0][0].toFixed(1)} ${p[0][1].toFixed(1)}`;
+    for (let i = 1; i < p.length - 1; i++) {
+      const mx = (p[i][0] + p[i + 1][0]) / 2;
+      const my = (p[i][1] + p[i + 1][1]) / 2;
+      d += ` Q${p[i][0].toFixed(1)} ${p[i][1].toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`;
+    }
+    const last = p[p.length - 1];
+    return { d: d + ` L${last[0].toFixed(1)} ${last[1].toFixed(1)}`, start: p[0], end: last };
+  }
+
+  function mapSvg({ w, h, route, color, mode, puck }) {
+    const m = MAP[mode];
+    const r = smoothPath(route, w, h);
+    const f = (n) => n.toFixed(1);
+    const contours = [0.27, 0.2, 0.13]
+      .map((k, i) => `<ellipse cx="${f(w * 0.62)}" cy="${f(h * 0.42)}" rx="${f(w * k)}" ry="${f(h * (0.16 - i * 0.045))}" transform="rotate(-12 ${f(w * 0.62)} ${f(h * 0.42)})" fill="none" stroke="${m.contour}" stroke-width="0.9"/>`)
+      .join('');
+    const end = puck
+      ? `<circle cx="${f(r.end[0])}" cy="${f(r.end[1])}" r="15" fill="${tint(puck, 0.2)}"/><circle cx="${f(r.end[0])}" cy="${f(r.end[1])}" r="6.5" fill="${puck}" stroke="#FFFFFF" stroke-width="2.5"/>`
+      : `<circle cx="${f(r.end[0])}" cy="${f(r.end[1])}" r="4.5" fill="${mode === 'light' ? '#1B1F22' : '#F2F2F2'}" stroke="${m.casing}" stroke-width="2"/>`;
+    return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect width="${w}" height="${h}" fill="${m.base}"/>
+      <path d="M0 ${f(h * 0.62)} C ${f(w * 0.18)} ${f(h * 0.52)}, ${f(w * 0.3)} ${f(h * 0.66)}, ${f(w * 0.44)} ${f(h * 0.57)} S ${f(w * 0.66)} ${f(h * 0.7)}, ${f(w * 0.74)} ${f(h * 0.6)} L ${w} ${f(h * 0.68)} L ${w} ${h} L 0 ${h} Z" fill="${m.park}"/>
+      <ellipse cx="${f(w * 0.84)}" cy="${f(h * 0.2)}" rx="${f(w * 0.2)}" ry="${f(h * 0.13)}" fill="${m.park}"/>
+      ${contours}
+      <path d="M-5 ${f(h * 0.36)} C ${f(w * 0.18)} ${f(h * 0.42)}, ${f(w * 0.3)} ${f(h * 0.28)}, ${f(w * 0.48)} ${f(h * 0.37)} S ${f(w * 0.78)} ${f(h * 0.48)}, ${w + 5} ${f(h * 0.4)}" fill="none" stroke="${m.water}" stroke-width="6" stroke-linecap="round"/>
+      <path d="M0 ${f(h * 0.16)} L ${w} ${f(h * 0.28)}" stroke="${m.roadEdge}" stroke-width="5.5"/>
+      <path d="M0 ${f(h * 0.16)} L ${w} ${f(h * 0.28)}" stroke="${m.road}" stroke-width="3.5"/>
+      <path d="M${f(w * 0.26)} 0 C ${f(w * 0.3)} ${f(h * 0.32)}, ${f(w * 0.17)} ${f(h * 0.64)}, ${f(w * 0.3)} ${h}" fill="none" stroke="${m.roadEdge}" stroke-width="4.5"/>
+      <path d="M${f(w * 0.26)} 0 C ${f(w * 0.3)} ${f(h * 0.32)}, ${f(w * 0.17)} ${f(h * 0.64)}, ${f(w * 0.3)} ${h}" fill="none" stroke="${m.road}" stroke-width="2.5"/>
+      <path d="${r.d}" fill="none" stroke="${m.casing}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="${r.d}" fill="none" stroke="${color}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="${f(r.start[0])}" cy="${f(r.start[1])}" r="4.5" fill="#FFFFFF" stroke="${color}" stroke-width="2.5"/>
+      ${end}
+    </svg>`;
+  }
+
+  const ROUTE_THUMB = [[0.06, 0.8], [0.16, 0.56], [0.26, 0.74], [0.36, 0.5], [0.48, 0.4], [0.58, 0.58], [0.68, 0.66], [0.78, 0.42], [0.86, 0.3], [0.94, 0.2]];
+  const ROUTE_REC = [[0.14, 0.9], [0.22, 0.8], [0.22, 0.7], [0.32, 0.64], [0.44, 0.67], [0.52, 0.58], [0.46, 0.48], [0.5, 0.38], [0.62, 0.34], [0.72, 0.38], [0.78, 0.3], [0.74, 0.22]];
+  const PROFILE = [672, 690, 705, 740, 780, 812, 850, 905, 960, 1010, 1042, 1080, 1120, 1165, 1190, 1230, 1262, 1284, 1270, 1248, 1255, 1272, 1280, 1284];
+
+  function profileSvg(color, mode) {
+    const w = 220, h = 34, min = 640, max = 1300;
+    const pts = PROFILE.map((v, i) => [(i / (PROFILE.length - 1)) * w, h - ((v - min) / (max - min)) * (h - 3)]);
+    const line = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ');
+    return `<svg class="prof" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+      <path d="${line} L${w} ${h} L0 ${h} Z" fill="${tint(color, mode === 'light' ? 0.18 : 0.26)}"/>
+      <path d="${line}" fill="none" stroke="${color}" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+    </svg>`;
+  }
+
+  function statusBar() {
+    return `<div class="island"></div><div class="sb"><span>9:41</span><span class="sb-r"><s></s><i></i></span></div>`;
+  }
+
+  function screenVars(p, mode) {
+    const t = p[mode];
+    return [
+      `--s-bg:${t.bg}`, `--s-surface:${t.surface}`, `--s-border:${t.border}`, `--s-text:${t.text}`,
+      `--s-muted:${t.muted}`, `--s-primary:${t.primary}`, `--s-on-primary:${t.onPrimary}`,
+      `--s-accent:${t.accent}`, `--s-on-accent:${readableOn(t.accent)}`, `--s-danger:${DANGER[mode]}`,
+    ].join(';');
+  }
+
+  function icon(p, mode, i, size = 30) {
+    const c = p.activity[mode][i];
+    return `<span class="ico" style="width:${size}px;height:${size}px;background:${tint(c, mode === 'light' ? 0.14 : 0.24)};color:${c}"><span class="ms">${ACTIVITIES[i].icon}</span></span>`;
+  }
+
+  function listScreen(p, mode) {
+    const a = p.activity[mode];
+    const rows = [
+      [1, 'Ruta en BTT de tarde', 'jueves, 16 oct · 17:05', '24,8 km · 1:52:10 · ↑ 690 m'],
+      [2, 'Carrera de mañana', 'martes, 14 oct · 7:30', '10,2 km · 52:41 · ↑ 84 m'],
+      [3, 'Caminata de tarde', 'domingo, 12 oct · 18:20', '6,4 km · 1:21:05 · ↑ 150 m'],
+    ];
+    return `<div class="screen" data-screen="list" style="${screenVars(p, mode)}">
+      ${statusBar()}
+      <div class="s-title">Actividades</div>
+      <div class="s-body">
+        <div class="week">
+          <div class="week-head"><span>Esta semana</span><span class="badge">Récord: 62,3 km</span></div>
+          <div class="stats3">
+            <div class="st"><small>Distancia</small><b>103,7<i> km</i></b></div>
+            <div class="st"><small>Tiempo</small><b>6:11:37</b></div>
+            <div class="st"><small>Desnivel</small><b>1.764<i> m</i></b></div>
+          </div>
+        </div>
+        <div class="feature">
+          ${mapSvg({ w: 228, h: 92, route: ROUTE_THUMB, color: a[0], mode })}
+          <div class="row">${icon(p, mode, 0)}<div><div class="row-t">Ruta en bici de mañana</div><div class="row-d">sábado, 18 oct · 8:12</div><div class="row-m">62,30 km · 2:05:41 · ↑ 840 m</div></div><span class="ms chev">chevron_right</span></div>
+        </div>
+        <div class="rows">
+          ${rows.map(([i, t, d, m]) => `<div class="row">${icon(p, mode, i)}<div><div class="row-t">${t}</div><div class="row-d">${d}</div><div class="row-m">${m}</div></div><span class="ms chev">chevron_right</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="cta"><span class="ms">play_arrow</span>Empezar actividad</div>
+      <div class="home"></div>
+    </div>`;
+  }
+
+  function recordScreen(p, mode) {
+    const color = p.activity[mode][1];
+    return `<div class="screen" data-screen="record" hidden style="${screenVars(p, mode)}">
+      <div class="rec-map">${mapSvg({ w: 238, h: 262, route: ROUTE_REC, color, mode, puck: p[mode].primary })}</div>
+      ${statusBar()}
+      <div class="rec-top"><span class="round"><span class="ms">expand_more</span></span><span class="pill"><i></i>En pausa</span></div>
+      <div class="panel">
+        <div class="big"><small>Tiempo en movimiento</small><b>1:12:48</b><span>Total 1:20:05</span></div>
+        <div class="grid4">
+          <div class="st"><small>Distancia</small><b>18,42<i> km</i></b></div>
+          <div class="st"><small>Media</small><b>15,2<i> km/h</i></b></div>
+          <div class="st"><small>Desnivel +</small><b>612<i> m</i></b></div>
+          <div class="st"><small>Altitud</small><b>1.284<i> m</i></b></div>
+        </div>
+        ${profileSvg(color, mode)}
+        <div class="actions"><span class="btn primary"><span class="ms">play_arrow</span>Reanudar</span><span class="btn danger"><span class="ms">stop</span>Terminar</span></div>
+      </div>
+      <div class="home"></div>
+    </div>`;
+  }
+
+  function swatches(t) {
+    const items = [['Primario', t.primary], ['Acento', t.accent], ['Fondo', t.bg], ['Superficie', t.surface], ['Texto', t.text], ['Secundario', t.muted]];
+    return `<div class="swatches">${items.map(([n, c]) => `<div class="sw"><span class="sw-color" style="background:${c}"></span><span class="sw-name">${n}</span><span class="sw-hex">${c}</span></div>`).join('')}</div>`;
+  }
+
+  function card(p) {
+    const checks = ['light', 'dark'].map((mode) => {
+      const t = p[mode];
+      const label = mode === 'light' ? 'Claro' : 'Oscuro';
+      return `<li><b>${label}</b> · botón ${num(contrast(t.onPrimary, t.primary))}:1 · actividades ΔE ${num(p.cvd[mode])}</li>`;
+    }).join('');
+    const acts = ACTIVITIES.map((a, i) => `<span class="act" title="Claro ${p.activity.light[i]} · Oscuro ${p.activity.dark[i]}"><span class="act-dot" style="background:linear-gradient(135deg, ${p.activity.light[i]} 50%, ${p.activity.dark[i]} 50%)"><span class="ms">${a.icon}</span></span>${a.label}</span>`).join('');
+    return `<article class="card" id="p-${p.id}" data-selected="false">
+      <header class="card-head">
+        <span class="num">${p.label}</span>
+        <div><h3>${p.name}</h3><p class="concept">${CONCEPTS[p.id]}</p></div>
+        <button type="button" class="pick" id="pick-${p.id}" aria-pressed="false" data-id="${p.id}">Elegir</button>
+      </header>
+      <div class="phones">
+        <figure class="phone-wrap"><div class="phone">${listScreen(p, 'light')}${recordScreen(p, 'light')}</div><figcaption>Claro</figcaption></figure>
+        <figure class="phone-wrap"><div class="phone">${listScreen(p, 'dark')}${recordScreen(p, 'dark')}</div><figcaption>Oscuro</figcaption></figure>
+      </div>
+      <div class="specs">
+        <div class="spec-row"><span class="spec-label">Claro</span>${swatches(p.light)}</div>
+        <div class="spec-row"><span class="spec-label">Oscuro</span>${swatches(p.dark)}</div>
+        <div class="spec-row"><span class="spec-label">Actividades</span><div class="acts">${acts}</div></div>
+        <ul class="checks" aria-label="Comprobaciones">${checks}</ul>
+      </div>
+    </article>`;
+  }
+
+  PALETTES.forEach((p, i) => { p.label = String(i + 1).padStart(2, '0'); });
+  VARIANTS.forEach((p, i) => { p.label = 'V' + (i + 1); });
+  const grid = document.getElementById('grid');
+  grid.innerHTML = PALETTES.map(card).join('');
+  const variantsGrid = document.getElementById('variants');
+  variantsGrid.innerHTML = VARIANTS.map(card).join('');
+
+  // Cambio de pantalla de la maqueta
+  const segButtons = document.querySelectorAll('.segmented button');
+  function showScreen(name) {
+    segButtons.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.screen === name)));
+    document.querySelectorAll('.screen').forEach((s) => { s.hidden = s.dataset.screen !== name; });
+  }
+  segButtons.forEach((b) => b.addEventListener('click', () => showScreen(b.dataset.screen)));
+
+  // Elección de paleta
+  const STORAGE_KEY = 'openroute-palette';
+  const choice = document.getElementById('choice');
+  const copyOut = document.getElementById('copy-out');
+  let selected = null;
+
+  function tokens(p) {
+    const block = (t, mode) => `  ${mode}: {
+    text: '${t.text}',
+    background: '${t.bg}',
+    backgroundElement: '${t.surface}',
+    textSecondary: '${t.muted}',
+    border: '${t.border}',
+    tint: '${t.primary}',
+    onTint: '${t.onPrimary}',
+    accent: '${t.accent}',
+    danger: '${DANGER[mode]}',
+  },`;
+    const acts = (mode) => `  ${mode}: { ${ACTIVITIES.map((a, i) => `${a.key}: '${p.activity[mode][i]}'`).join(', ')} },`;
+    return `// Paleta «${p.name}» para src/constants/theme.ts
+export const Colors = {
+${block(p.light, 'light')}
+${block(p.dark, 'dark')}
+} as const;
+
+export const ActivityColors = {
+${acts('light')}
+${acts('dark')}
+} as const;
+`;
+  }
+
+  function select(id) {
+    selected = ALL.find((p) => p.id === id) ?? null;
+    document.querySelectorAll('.card').forEach((c) => { c.dataset.selected = String(c.id === `p-${id}`); });
+    document.querySelectorAll('.pick').forEach((b) => {
+      const on = b.dataset.id === id;
+      b.setAttribute('aria-pressed', String(on));
+      b.textContent = on ? 'Elegida' : 'Elegir';
+    });
+    copyOut.hidden = true;
+    if (!selected) { choice.hidden = true; return; }
+    document.getElementById('choice-swatch').innerHTML = [selected.light.primary, selected.light.accent, ...selected.activity.light, selected.dark.bg]
+      .map((c) => `<span style="background:${c}"></span>`).join('');
+    document.getElementById('choice-text').innerHTML = `<strong>${selected.label} · ${selected.name}</strong><br>Dime el número en el chat y la aplico a la app.`;
+    choice.hidden = false;
+  }
+
+  document.querySelector('.wrap-sections').addEventListener('click', (e) => {
+    const btn = e.target.closest('.pick');
+    if (!btn) return;
+    const id = btn.dataset.id === selected?.id ? null : btn.dataset.id;
+    select(id);
+    try { id ? localStorage.setItem(STORAGE_KEY, id) : localStorage.removeItem(STORAGE_KEY); } catch {}
+  });
+
+  document.getElementById('copy').addEventListener('click', async (e) => {
+    if (!selected) return;
+    const text = tokens(selected);
+    const button = e.currentTarget;
+    try {
+      await navigator.clipboard.writeText(text);
+      button.textContent = 'Copiados';
+      setTimeout(() => { button.textContent = 'Copiar tokens'; }, 1600);
+    } catch {
+      copyOut.value = text;
+      copyOut.hidden = false;
+      copyOut.focus();
+      copyOut.select();
+    }
+  });
+
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) select(saved);
+  } catch {}
+</script>

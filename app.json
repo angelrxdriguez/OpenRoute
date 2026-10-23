@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "OpenRoute",
+    "slug": "openroute",
+    "version": "0.1.0",
+    "platforms": ["ios"],
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "openroute",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.angelrxdriguez.openroute",
+      "supportsTablet": false,
+      "icon": "./assets/expo.icon",
+      "infoPlist": {
+        "CFBundleDevelopmentRegion": "es",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#000000",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 76
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "OpenRoute usa tu ubicación para grabar la ruta de tus actividades.",
+          "locationAlwaysAndWhenInUsePermission": "OpenRoute necesita tu ubicación también con la pantalla bloqueada para seguir grabando la ruta mientras entrenas.",
+          "isIosBackgroundLocationEnabled": true
+        }
+      ],
+      "expo-sqlite",
+      "@rnmapbox/maps"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
