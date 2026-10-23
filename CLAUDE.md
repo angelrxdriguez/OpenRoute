@@ -1,5 +1,5 @@
 @AGENTS.md
-
+HABLAME EN ESPAÑOL
 ## OpenRoute
 
 - App privada tipo Strava solo para iPhone. Interfaz, textos y documentación en **español**.
