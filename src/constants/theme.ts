@@ -23,6 +23,10 @@ export const Colors = {
     onDanger: '#FFFFFF',
     /** Estado «en pausa». Solo como indicador junto a su texto (2:1 sobre blanco). */
     warning: '#F5A623',
+    /** Borde de la ruta y de los marcadores del mapa, para que destaquen sobre cualquier fondo. */
+    routeCasing: '#FFFFFF',
+    /** Velo detrás de las hojas de confirmación. */
+    overlay: 'rgba(0, 0, 0, 0.45)',
   },
   dark: {
     text: '#FFFFFF',
@@ -38,6 +42,8 @@ export const Colors = {
     danger: '#D93025',
     onDanger: '#FFFFFF',
     warning: '#F5A623',
+    routeCasing: '#0E1012',
+    overlay: 'rgba(0, 0, 0, 0.6)',
   },
 } as const;
 
@@ -63,6 +69,13 @@ export const Fonts = Platform.select({
     rounded: 'ui-rounded',
     /** iOS `UIFontDescriptorSystemDesignMonospaced` */
     mono: 'ui-monospace',
+  },
+  /** Solo para el entorno de pruebas en el navegador. */
+  web: {
+    sans: "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    serif: "Georgia, 'Times New Roman', serif",
+    rounded: "'SF Pro Rounded', ui-rounded, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+    mono: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
   },
   default: {
     sans: 'normal',

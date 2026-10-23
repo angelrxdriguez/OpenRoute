@@ -41,6 +41,8 @@ Los tokens viven en [`src/constants/theme.ts`](../../src/constants/theme.ts) (`C
 | `danger` | `#D93025` | `#D93025` | Terminar, descartar, borrar e indicador de grabando |
 | `onDanger` | `#FFFFFF` | `#FFFFFF` | Texto sobre `danger` |
 | `warning` | `#F5A623` | `#F5A623` | Indicador «en pausa» |
+| `routeCasing` | `#FFFFFF` | `#0E1012` | Borde de la ruta y de los marcadores del mapa |
+| `overlay` | negro al 45 % | negro al 60 % | Velo detrás de las hojas de confirmación |
 
 ### Colores de actividad
 

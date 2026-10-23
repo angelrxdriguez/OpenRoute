@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
+    "@expo/metro-runtime": "~58.0.15",
     "@expo/ui": "~58.0.22",
     "@rnmapbox/maps": "^10.3.11",
     "expo": "~58.0.17",
@@ -22,6 +23,7 @@
     "expo-system-ui": "~58.0.6",
     "expo-task-manager": "~58.0.12",
     "expo-web-browser": "~58.0.6",
+    "maplibre-gl": "^5.24.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-native": "0.88.0",
@@ -45,6 +47,7 @@
   "scripts": {
     "start": "expo start",
     "ios": "expo start --ios",
+    "web": "expo start --web",
     "lint": "expo lint",
     "test": "jest --passWithNoTests",
     "typecheck": "tsc --noEmit"

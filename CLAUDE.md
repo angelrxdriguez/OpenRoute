@@ -8,6 +8,7 @@
 - Añadir una dependencia nativa obliga a recompilar el `.ipa`. Evítalo si no hace falta y avisa cuando ocurra.
 - Avanza por fases y solo con lo que se pida en cada momento: no adelantes lógica que no se haya pedido.
 - Antes de dar algo por terminado: `npx expo lint`, `npm run typecheck`, `npm test`.
+- La app también corre en Chrome como entorno de pruebas (`npm run web`, ADR-0003). Lo que cambia entre iPhone y navegador va en archivos `.web.ts(x)` junto al original. Para confirmar usa `ConfirmSheet`, no `Alert`, que en web no hace nada. Pide la hora a `@/lib/clock`, no a `Date.now()`.
 
 ## Diseño
 
@@ -17,7 +18,12 @@
 
 ## Estado actual (actualízalo al cerrar cada fase)
 
-- **Hecho:** stack montado (ADR-0001) y paleta Volt elegida y aplicada en `theme.ts` (ADR-0002). La app solo tiene una pantalla provisional con un mapa.
-- **Siguiente:** empezar con las funcionalidades.
-- **Propuesto, sin confirmar todavía por el usuario:** un entorno de pruebas en Chrome para no depender del iPhone ni registrarse en Mapbox. Sería Expo web, MapLibre con OpenFreeMap solo en web y un simulador de GPS que reproduce rutas GPX. Pregunta antes de montarlo.
-- **Borrador aparcado:** en `git stash` («Lógica inicial…») hay una primera versión de la base de datos SQLite, la grabación GPS en segundo plano, el motor de estadísticas con 24 tests y tres pantallas. Se apartó porque se pidió montar solo el stack. Revísala con `git stash show -p --include-untracked stash@{0}` antes de reescribir esa parte desde cero. Usa la paleta antigua y archivos que ya cambiaron (`_layout.tsx`, `index.tsx`), así que no la apliques tal cual.
+- **Hecho:** stack (ADR-0001), paleta Volt (ADR-0002) e icono de la app con el logo.
+- **Hecho, fase 1 «grabar, lista y detalle»** (decisiones del usuario: navegación con lista y botón «Grabar», sin pestañas; pantalla de grabación con el mapa arriba y los datos abajo):
+  - Grabar: elegir actividad, empezar, pausar, reanudar, terminar, guardar o descartar, y recuperar la grabación si iOS cierra la app.
+  - Lista de actividades con el resumen de la semana, y detalle con mapa, estadísticas y parciales.
+  - Basta con el permiso de ubicación «Al usar la app»: no se pide «Siempre».
+  - Se aprovechó el borrador que estaba en `git stash`, adaptado a la paleta Volt. Ese stash ya sobra: pregunta al usuario antes de borrarlo.
+- **Hecho:** entorno de pruebas en Chrome (ADR-0003, `docs/pruebas-en-chrome.md`). Con él se probó toda la fase 1, en claro y en oscuro.
+- **Pendiente de probar en el iPhone:** todo lo nativo, que el navegador no ejecuta: Mapbox, permisos, GPS real y grabación con la pantalla bloqueada. El `.ipa` de desarrollo ya está compilado; falta instalarlo, porque el usuario no tenía cable.
+- **Siguiente:** que el usuario revise la fase 1. La repetición animada de la ruta queda para otra fase.
