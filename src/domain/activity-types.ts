@@ -12,7 +12,10 @@ export type ActivityTypeConfig = {
   id: ActivityType;
   label: string;
   icon: IconName;
-  /** Las actividades a pie se leen en ritmo (min/km); las de bici, en velocidad (km/h). */
+  /**
+   * Velocidad (km/h) o ritmo (min/km). El usuario prefiere km/h también a pie, así que todas van
+   * en velocidad; el ritmo queda disponible por si alguna actividad lo necesita.
+   */
   primaryMetric: 'speed' | 'pace';
   /** Velocidad (m/s) por debajo de la cual se considera que estás parado. */
   movingThreshold: number;
@@ -41,7 +44,7 @@ export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
     id: 'run',
     label: 'Correr',
     icon: { ios: 'figure.run', web: 'directions_run' },
-    primaryMetric: 'pace',
+    primaryMetric: 'speed',
     movingThreshold: 0.8,
     maxPlausibleSpeed: 10,
   },
@@ -49,7 +52,7 @@ export const ACTIVITY_TYPE_CONFIG: Record<ActivityType, ActivityTypeConfig> = {
     id: 'walk',
     label: 'Caminar',
     icon: { ios: 'figure.walk', web: 'directions_walk' },
-    primaryMetric: 'pace',
+    primaryMetric: 'speed',
     movingThreshold: 0.4,
     maxPlausibleSpeed: 5,
   },

@@ -25,13 +25,13 @@ describe('format', () => {
 
   it('formatea velocidad y ritmo', () => {
     expect(formatSpeed(10)).toEqual({ value: '36,0', unit: 'km/h' });
-    expect(formatPace(1000 / 330)).toEqual({ value: '5:30', unit: '/km' });
-    expect(formatPace(0)).toEqual({ value: '–', unit: '/km' });
+    expect(formatPace(1000 / 330)).toEqual({ value: '5:30', unit: 'min/km' });
+    expect(formatPace(0)).toEqual({ value: '–', unit: 'min/km' });
   });
 
-  it('elige ritmo a pie y velocidad en bici', () => {
-    expect(formatPrimarySpeed('run', 1000 / 300).unit).toBe('/km');
-    expect(formatPrimarySpeed('walk', 1.4).unit).toBe('/km');
+  it('usa velocidad en todas las actividades, también a pie', () => {
+    expect(formatPrimarySpeed('run', 1000 / 300)).toEqual({ value: '12,0', unit: 'km/h' });
+    expect(formatPrimarySpeed('walk', 1.4)).toEqual({ value: '5,0', unit: 'km/h' });
     expect(formatPrimarySpeed('road_bike', 8).unit).toBe('km/h');
     expect(formatPrimarySpeed('mtb', 5).unit).toBe('km/h');
   });

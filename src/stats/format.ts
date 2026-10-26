@@ -32,11 +32,15 @@ export function formatSpeed(metersPerSecond: number): Measure {
   return { value: decimal(metersPerSecond * 3.6, 1), unit: 'km/h' };
 }
 
-/** Ritmo en minutos por kilómetro. Por debajo de 0,5 km/h no tiene sentido y se muestra un guion. */
+/**
+ * Ritmo: minutos y segundos que tardas en recorrer un kilómetro (`11:52 min/km` = 5,1 km/h).
+ * La unidad dice «min/km» y no solo «/km» para que no se lea como una velocidad.
+ * Por debajo de 0,5 km/h no tiene sentido y se muestra un guion.
+ */
 export function formatPace(metersPerSecond: number): Measure {
-  if (metersPerSecond < 0.14) return { value: '–', unit: '/km' };
+  if (metersPerSecond < 0.14) return { value: '–', unit: 'min/km' };
   const secondsPerKm = Math.round(1000 / metersPerSecond);
-  return { value: `${Math.floor(secondsPerKm / 60)}:${pad(secondsPerKm % 60)}`, unit: '/km' };
+  return { value: `${Math.floor(secondsPerKm / 60)}:${pad(secondsPerKm % 60)}`, unit: 'min/km' };
 }
 
 /** Velocidad o ritmo según lo que tenga sentido para el tipo de actividad. */

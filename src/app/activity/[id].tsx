@@ -98,7 +98,7 @@ function ActivityDetail({ activity, points }: Loaded) {
     <View>
       <Stack.Screen options={{ title: activity.name ?? config.label }} />
       <View style={styles.map}>
-        <RouteMap points={track} color={color} mode="overview" />
+        <RouteMap points={track} mode="overview" />
       </View>
 
       <View style={styles.body}>

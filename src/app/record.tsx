@@ -133,7 +133,6 @@ function StartView() {
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const [gps, setGps] = useState<GpsPreview>({ status: 'searching' });
-  const color = useActivityColor(type);
 
   useEffect(() => watchPreviewPosition(setGps), []);
 
@@ -158,7 +157,7 @@ function StartView() {
   return (
     <ThemedView style={styles.container}>
       <View style={styles.mapArea}>
-        <RouteMap points={NO_POINTS} color={color} mode="follow" position={position} />
+        <RouteMap points={NO_POINTS} mode="follow" position={position} />
         <View style={[styles.topBar, { top: insets.top + Spacing.two }]}>
           <RoundButton icon={Icons.close} label="Cerrar" onPress={close} />
           <GpsStatus gps={gps} />
@@ -183,7 +182,6 @@ function RecordingView({ session, onLeave }: { session: RecordingSession; onLeav
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const config = ACTIVITY_TYPE_CONFIG[session.type];
-  const color = useActivityColor(session.type);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const [sheet, setSheet] = useState<'finish' | 'discard' | null>(null);
@@ -206,7 +204,7 @@ function RecordingView({ session, onLeave }: { session: RecordingSession; onLeav
     session.status === 'recording' && lastRaw && current - lastRaw.timestamp < CURRENT_SPEED_MAX_AGE_MS
       ? Math.max(0, lastRaw.speed ?? 0)
       : 0;
-  // Parado (por debajo del umbral de la actividad) se muestra 0 km/h o «–» de ritmo, no 116:00 /km.
+  // Parado (por debajo del umbral de la actividad) se muestra 0 km/h o «–» de ritmo, no 116:00 min/km.
   const currentSpeed = gpsSpeed >= config.movingThreshold ? gpsSpeed : 0;
   const isPace = config.primaryMetric === 'pace';
   const recording = session.status === 'recording';
@@ -264,7 +262,7 @@ function RecordingView({ session, onLeave }: { session: RecordingSession; onLeav
   return (
     <ThemedView style={styles.container}>
       <View style={styles.mapArea}>
-        <RouteMap points={track} color={color} mode="follow" position={position} />
+        <RouteMap points={track} mode="follow" position={position} />
         <View style={[styles.topBar, { top: insets.top + Spacing.two }]}>
           <RoundButton icon={Icons.minimize} label="Minimizar" onPress={close} />
           <View style={[styles.pill, styles.statusPill, { backgroundColor: theme.background }]}>

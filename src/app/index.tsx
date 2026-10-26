@@ -114,12 +114,10 @@ function ActivityRow({ activity, now }: { activity: Activity; now: number }) {
 
   let summary: string | null = null;
   if (stats) {
-    // A pie importa el ritmo; en bici, el desnivel.
-    const pace = formatPrimarySpeed(activity.type, stats.avgSpeed);
-    const extra =
-      config.primaryMetric === 'pace'
-        ? `${pace.value} ${pace.unit}`
-        : `↑ ${formatElevation(stats.elevationGain).value} m`;
+    // A pie importa la velocidad media; en bici, el desnivel.
+    const onFoot = activity.type === 'run' || activity.type === 'walk';
+    const speed = formatPrimarySpeed(activity.type, stats.avgSpeed);
+    const extra = onFoot ? `${speed.value} ${speed.unit}` : `↑ ${formatElevation(stats.elevationGain).value} m`;
     summary = `${formatDistance(stats.distance).value} km · ${formatDuration(stats.movingTime)} · ${extra}`;
   }
 
