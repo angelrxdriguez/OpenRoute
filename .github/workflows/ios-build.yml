@@ -1,5 +1,5 @@
 # Compila la app para iPhone SIN firmar, en un Mac de GitHub, y deja el .ipa como artefacto.
-# Después se instala desde Windows con Sideloadly usando un Apple ID gratuito
+# Después se instala desde Windows con iloader usando un Apple ID gratuito
 # (ver docs/instalacion-iphone.md).
 #
 # Se lanza a mano desde GitHub > Actions > "iOS build" > Run workflow, o con:

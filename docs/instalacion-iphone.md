@@ -2,13 +2,15 @@
 
 Esta guía instala la app con un **Apple ID gratuito**, sin Mac y sin pagar el Apple Developer Program. El porqué está en el [ADR-0001](adr/0001-stack-y-distribucion.md).
 
-Resumen: GitHub compila la app en un Mac en la nube → descargas el `.ipa` → Sideloadly la instala en el iPhone. La instalación dura **7 días** y luego se renueva sin perder datos.
+Resumen: GitHub compila la app en un Mac en la nube → descargas el `.ipa` → iloader la instala en el iPhone. La instalación dura **7 días** y luego se renueva sin perder datos.
+
+> Se usa **iloader** porque Sideloadly no funcionó.
 
 ---
 
 ## 1. Preparar el PC (solo la primera vez)
 
-1. Instala **Sideloadly**: <https://sideloadly.io>. Sigue sus instrucciones para Windows sobre iTunes e iCloud (suele pedir las versiones que se descargan de la web de Apple, no las de Microsoft Store).
+1. Instala **iloader**: <https://iloader.app> (gratuito y de código abierto).
 2. Instala las dependencias del proyecto:
    ```bash
    npm install
@@ -55,11 +57,12 @@ También puedes descargarla desde GitHub → pestaña **Actions** → la ejecuci
 
 > Solo hace falta recompilar cuando se añaden librerías nativas o se cambia `app.json`. Los cambios normales de código no lo necesitan con el perfil `development`.
 
-## 4. Instalar con Sideloadly
+## 4. Instalar con iloader
 
 1. Conecta el iPhone al PC con cable. Desbloquéalo y pulsa **Confiar en este ordenador**.
-2. Abre Sideloadly, arrastra el `.ipa`, escribe tu Apple ID y pulsa **Start**. La primera vez te pedirá el código de verificación en dos pasos.
-3. En el iPhone:
+2. Abre iloader, pulsa **Iniciar sesión** con tu Apple ID (la primera vez pide el código de verificación) y elige el iPhone en **Seleccionar un dispositivo**.
+3. Pulsa **Importar IPA** y elige el `.ipa`. iloader lo firma y lo instala.
+4. En el iPhone:
    - **Ajustes → General → VPN y gestión de dispositivos →** tu Apple ID **→ Confiar**.
    - **Ajustes → Privacidad y seguridad → Modo de desarrollador →** actívalo. El iPhone se reinicia y te pide confirmarlo.
 
@@ -68,6 +71,13 @@ También puedes descargarla desde GitHub → pestaña **Actions** → la ejecuci
 - Al empezar la primera actividad, iOS pide la ubicación: elige **Permitir al usarse la app**. Basta con eso: la app no pide «Siempre» y sigue grabando con la pantalla bloqueada.
 - Deja activada la **Ubicación exacta**.
 - Durante la grabación verás el indicador azul de ubicación en la barra de estado: es normal y significa que el GPS sigue grabando.
+
+### Datos en la pantalla bloqueada (Live Activity)
+
+Mientras grabas, la pantalla bloqueada muestra una tarjeta con la actividad, el tiempo en movimiento, la distancia y la velocidad media. En los iPhone con Dynamic Island también aparece arriba. Al tocarla se abre la grabación. Por qué está hecha así: [ADR-0004](adr/0004-live-activity-nativa.md).
+
+- No hay que configurar nada. Si no aparece, mira **Ajustes → OpenRoute → Actividades en directo**.
+- Si iOS cierra la app mientras grabas, la tarjeta deja de contar y pide abrir OpenRoute: al abrirla, la grabación sigue.
 
 ### Con el perfil `development`
 
@@ -80,10 +90,7 @@ También puedes descargarla desde GitHub → pestaña **Actions** → la ejecuci
 
 ## 6. Renovar cada 7 días
 
-Pasados 7 días la app no abre, pero **tus actividades siguen en el iPhone**. Para renovarla:
-
-- **Automático:** activa la renovación automática de Sideloadly y la sincronización por Wi-Fi del iPhone. Con el PC encendido y en la misma Wi-Fi, Sideloadly la renueva antes de que caduque.
-- **Manual:** conecta el iPhone y vuelve a instalar el mismo `.ipa` con Sideloadly. Se instala por encima y conserva los datos.
+Pasados 7 días la app no abre, pero **tus actividades siguen en el iPhone**. Para renovarla, conecta el iPhone y vuelve a instalar el mismo `.ipa` con iloader (**Importar IPA**). Se instala por encima y conserva los datos.
 
 Cada nueva compilación instalada también reinicia el plazo de 7 días.
 

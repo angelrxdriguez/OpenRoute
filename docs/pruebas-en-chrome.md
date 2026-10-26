@@ -31,7 +31,7 @@ Mientras grabas puedes:
 - **Volver a la salida:** reinicia la ruta.
 - **Recargar la página:** la grabación se recupera, como cuando iOS cierra la app en segundo plano.
 
-La velocidad depende de la actividad que grabes, no del GPX: unos 27 km/h en bici de carretera en llano, 18 km/h en BTT, 5:30 /km corriendo y 12:20 /km caminando. Va más despacio cuesta arriba y más rápido cuesta abajo. Las posiciones llevan un poco de error, como las del GPS real.
+La velocidad depende de la actividad que grabes, no del GPX: unos 27 km/h en bici de carretera en llano, 18 km/h en BTT, 10,8 km/h corriendo y 4,9 km/h caminando. Va más despacio cuesta arriba y más rápido cuesta abajo. Las posiciones llevan un poco de error, como las del GPS real.
 
 ## El reloj acelerado
 
@@ -42,6 +42,7 @@ Al acelerar el tiempo, el reloj de la app se adelanta a la hora real: tras una h
 El simulador sustituye al GPS, pero no reproduce lo que solo pasa en el iPhone. Todo esto hay que probarlo en el dispositivo:
 
 - La grabación **con la pantalla bloqueada** y los permisos de ubicación de iOS.
+- La **Live Activity** de la pantalla bloqueada y la Dynamic Island ([ADR-0004](adr/0004-live-activity-nativa.md)). En el navegador no se muestra nada.
 - El **mapa de Mapbox**. En el navegador se ve MapLibre con los mapas de OpenFreeMap: el aspecto y los estilos cambian un poco.
 - El **consumo de batería** y la precisión real del GPS.
 - Las **hojas de confirmación**, que en el navegador cubren toda la ventana y no solo el marco del iPhone.

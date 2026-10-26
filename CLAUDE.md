@@ -3,7 +3,9 @@ HABLAME EN ESPAÑOL
 ## OpenRoute
 
 - App privada tipo Strava solo para iPhone. Interfaz, textos y documentación en **español**.
-- Se desarrolla en Windows: no hay Xcode ni `expo prebuild` para iOS en local. El `.ipa` se compila en GitHub Actions (`.github/workflows/ios-build.yml`) y se instala con Sideloadly. Decisión en `docs/adr/0001-stack-y-distribucion.md`.
+- Se desarrolla en Windows: no hay Xcode. El `.ipa` se compila en GitHub Actions (`.github/workflows/ios-build.yml`) y se instala con **iloader** (Sideloadly no funcionó). Decisión en `docs/adr/0001-stack-y-distribucion.md`.
+- `expo prebuild` para iOS no funciona en Windows, pero sí en WSL (Ubuntu, con Node 22) para revisar el proyecto Xcode generado sin compilarlo. Borra luego la carpeta `ios/`.
+- El código nativo propio va en `modules/` (módulos de Expo) y `targets/` (extensiones, con `@bacons/apple-targets`). El Swift solo se compila en GitHub Actions. Nada nativo puede depender de un App Group: iloader le cambia el nombre (ADR-0004).
 - Coste cero hasta comercializar: nada de EAS Build, Apple Developer ni servicios de pago sin preguntar.
 - Añadir una dependencia nativa obliga a recompilar el `.ipa`. Evítalo si no hace falta y avisa cuando ocurra.
 - Avanza por fases y solo con lo que se pida en cada momento: no adelantes lógica que no se haya pedido.
@@ -25,5 +27,9 @@ HABLAME EN ESPAÑOL
   - Basta con el permiso de ubicación «Al usar la app»: no se pide «Siempre».
   - Se aprovechó el borrador que estaba en `git stash`, adaptado a la paleta Volt. Ese stash ya sobra: pregunta al usuario antes de borrarlo.
 - **Hecho:** entorno de pruebas en Chrome (ADR-0003, `docs/pruebas-en-chrome.md`). Con él se probó toda la fase 1, en claro y en oscuro.
-- **Pendiente de probar en el iPhone:** todo lo nativo, que el navegador no ejecuta: Mapbox, permisos, GPS real y grabación con la pantalla bloqueada. El `.ipa` de desarrollo ya está compilado; falta instalarlo, porque el usuario no tenía cable.
-- **Siguiente:** que el usuario revise la fase 1. La repetición animada de la ruta queda para otra fase.
+- **Probado en el iPhone (2026-10-26).** Cambios pedidos tras la prueba:
+  - Ritmo: el cálculo estaba bien (11:52 min/km = 5,1 km/h andando), pero el usuario prefiere km/h: todas las actividades, también correr y caminar, se muestran en velocidad (`primaryMetric` en `activity-types.ts`).
+  - Live Activity en la pantalla bloqueada y la Dynamic Island (ADR-0004): tiempo en movimiento, distancia y velocidad media.
+  - Icono invertido: fondo amarillo Volt y avión en negro y gris (`assets/logo/icon.svg` es la fuente).
+- **Pendiente:** compilar el `.ipa` nuevo, instalarlo con iloader y comprobar la Live Activity en el iPhone. Es lo primero nativo que se compila sin probar antes en Windows: si falla, el log está en el artefacto `xcodebuild-log` del workflow.
+- **Siguiente:** la repetición animada de la ruta queda para otra fase.

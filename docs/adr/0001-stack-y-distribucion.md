@@ -28,6 +28,7 @@ Restricciones:
 3. **Mapas con Mapbox (`@rnmapbox/maps`)**, estilo Outdoors y terreno 3D para la simulación.
 4. **Datos locales en SQLite (`expo-sqlite`)**, sin servidor. Se guardarán todos los puntos GPS en bruto y las estadísticas se calcularán con funciones puras y testeadas.
 5. **Distribución gratuita:** el `.ipa` se compila **sin firmar en GitHub Actions** (macOS en la nube) y se instala con **Sideloadly** usando un Apple ID gratuito.
+   > Actualización 2026-10-26: Sideloadly no funcionó y se instala con **iloader**, que también es gratuito. El resto de la decisión no cambia (ver `docs/instalacion-iphone.md`).
 6. Se pasará al **Apple Developer Program (99 €/año)** y a **EAS Build y TestFlight** solo cuando se quiera comercializar la app o deje de compensar renovarla cada semana.
 
 ## Opciones consideradas

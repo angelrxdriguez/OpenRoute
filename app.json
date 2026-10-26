@@ -14,7 +14,8 @@
       "icon": "./assets/images/icon.png",
       "infoPlist": {
         "CFBundleDevelopmentRegion": "es",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSSupportsLiveActivities": true
       }
     },
     "web": {
@@ -40,7 +41,8 @@
         }
       ],
       "expo-sqlite",
-      "@rnmapbox/maps"
+      "@rnmapbox/maps",
+      "@bacons/apple-targets"
     ],
     "experiments": {
       "typedRoutes": true,

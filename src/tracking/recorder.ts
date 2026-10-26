@@ -15,6 +15,7 @@ import { now } from '@/lib/clock';
 import { computeStats } from '@/stats/compute-stats';
 import { defaultActivityName } from '@/stats/format';
 import { applyAutoPause, initialAutoPause } from '@/tracking/auto-pause';
+import { endLiveActivity, startLiveActivity, updateLiveActivity } from '@/tracking/live-activity';
 import { ensurePermissions, startLocationUpdates, stopLocationUpdates } from '@/tracking/location-source';
 import { useRecordingStore, type RecordingSession } from '@/tracking/recording-store';
 
@@ -79,12 +80,14 @@ export async function startRecording(type: ActivityType): Promise<void> {
     store().setSession(null);
     throw error;
   }
+  startLiveActivity(requireSession());
 }
 
 /** El GPS sigue encendido en pausa para no perder la señal; las posiciones se ignoran. */
 export async function pauseRecording(): Promise<void> {
   const session = requireSession();
   store().setStatus('paused', session.segment);
+  updateLiveActivity(requireSession());
   await updateActivityStatus(session.activityId, 'paused', session.segment);
 }
 
@@ -95,6 +98,7 @@ export async function resumeRecording(): Promise<void> {
   await updateActivityStatus(session.activityId, 'recording', segment);
   autoPause = initialAutoPause();
   store().setStatus('recording', segment);
+  updateLiveActivity(requireSession());
   await startLocationUpdates();
 }
 
@@ -110,6 +114,7 @@ export async function finishRecording(): Promise<number> {
   const stats = computeStats(points, session.type, { startedAt: session.startedAt, endedAt });
   await finishActivity(session.activityId, endedAt, defaultActivityName(session.type, session.startedAt), stats);
 
+  endLiveActivity();
   store().setSession(null);
   return session.activityId;
 }
@@ -120,16 +125,20 @@ export async function discardRecording(): Promise<void> {
   await stopLocationUpdates();
   await pendingWrites;
   await deleteActivity(session.activityId);
+  endLiveActivity();
   store().setSession(null);
 }
 
 /**
- * Al abrir la app: si iOS la cerró a mitad de una grabación, recupera los puntos guardados
- * y vuelve a encender el GPS.
+ * Al abrir la app: si iOS la cerró a mitad de una grabación, recupera los puntos guardados,
+ * vuelve a encender el GPS y sustituye la Live Activity, que se había quedado sin actualizar.
  */
 export async function restoreRecording(): Promise<void> {
   await hydrateSession();
-  if (store().session) await startLocationUpdates();
+  const session = store().session;
+  if (!session) return;
+  await startLocationUpdates();
+  startLiveActivity(session);
 }
 
 function toTrackPoint(location: LocationObject, segment: number): TrackPoint {
@@ -167,10 +176,17 @@ async function persistLocations(locations: LocationObject[]): Promise<void> {
   store().setAutoPaused(result.state.paused);
 }
 
+/** El GPS sigue mandando lecturas en pausa, así que también sirven para refrescar la Live Activity. */
+function refreshLiveActivity(): void {
+  const session = store().session;
+  if (session) updateLiveActivity(session);
+}
+
 /** Punto de entrada de las posiciones del GPS (la tarea en segundo plano o el simulador). */
 export function handleLocationBatch(locations: LocationObject[]): Promise<void> {
   pendingWrites = pendingWrites
     .then(() => persistLocations(locations))
+    .then(refreshLiveActivity)
     .catch((error: unknown) => {
       console.warn('[OpenRoute] No se pudieron guardar las posiciones', error);
     });
